@@ -22,10 +22,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest pytest-cov
 
       - name: Run tests
-        run: pytest tests/ -v
+        run: pytest tests/ -v --cov=app --cov-report=term-missing --cov-fail-under=70
 
   build-and-push:
     name: Build and Push to ECR
@@ -71,7 +71,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
-          target: "/app"
+          target: "/home/ec2-user/app"
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -82,11 +82,11 @@ jobs:
           script: |
             aws ecr get-login-password --region us-east-1 | \
               docker login --username AWS --password-stdin ${{ secrets.ECR_URL }}
-            
+
             export ECR_URL=${{ secrets.ECR_URL }}
             export IMAGE_TAG=${{ github.sha }}
-            
-            cd /app
+
+            cd /home/ec2-user/app
             docker compose pull
             docker compose up -d
             docker image prune -f
