@@ -23,3 +23,8 @@ env/
 
 # Docker
 docker-compose.override.yml
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
