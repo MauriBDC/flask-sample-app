@@ -3,9 +3,9 @@ output "ecr_repository_url" {
   value       = aws_ecr_repository.app.repository_url
 }
 
-output "ec2_public_ip" {
-  description = "IP público da instância EC2"
-  value       = aws_instance.app.public_ip
+output "elastic_ip" {
+  description = "IP fixo da EC2"
+  value       = aws_eip.app.public_ip
 }
 
 output "ec2_public_dns" {
@@ -15,5 +15,5 @@ output "ec2_public_dns" {
 
 output "ssh_command" {
   description = "Comando pronto para acessar a EC2 via SSH"
-  value       = "ssh -i ~/.ssh/flask-lab-key.pem ec2-user@${aws_instance.app.public_ip}"
+  value       = "ssh -i ~/.ssh/flask-lab-key.pem ec2-user@${aws_eip.app.public_ip}"
 }
