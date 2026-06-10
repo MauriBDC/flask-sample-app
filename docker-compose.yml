@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${ECR_URL}/flask-sample-app:${IMAGE_TAG:-latest}
+    image: ${ECR_URL}:${IMAGE_TAG:-latest}
     ports:
       - "80:80"
     environment:
