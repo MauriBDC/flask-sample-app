@@ -8,7 +8,7 @@ A aplicação original continha apenas o código da API e os testes automatizado
 
 * Containerização da aplicação com Docker
 * Execução da aplicação com Gunicorn
-* Orquestração local utilizando Docker Compose
+* Execução local da aplicação utilizando Docker Compose
 * Testes automatizados com Pytest e Coverage
 * Pipeline CI/CD utilizando GitHub Actions
 * Build e publicação automática de imagens no Amazon ECR
@@ -35,7 +35,7 @@ GitHub Actions
                 Amazon ECR
                     │
                     ▼
-                Amazon EC2
+      EC2 (IAM Role + Elastic IP)
                     │
                     ▼
               Flask + Gunicorn
@@ -72,7 +72,35 @@ A cada push para a branch `main`:
 4. A instância EC2 atualiza a aplicação utilizando a nova imagem.
 5. Logs e métricas podem ser acompanhados pelo CloudWatch.
 
-## Tecnologias Utilizadas
+## Decisões técnicas
+
+* **Elastic IP**: utilizado para manter o IP da EC2 fixo entre ciclos de `terraform destroy` e `terraform apply`, evitando reconfiguração manual a cada execução do laboratório.
+* **IAM Role em vez de credenciais estáticas**: a EC2 acessa o ECR e o CloudWatch através de uma IAM Role associada à instância, eliminando a necessidade de armazenar chaves de acesso na máquina.
+* **Deploy via SSH heredoc**: o `docker-compose.yml` é escrito diretamente na instância durante a execução da pipeline, evitando problemas de sincronização e sobrescrita de arquivos.
+* **CloudWatch Agent**: utilizado para coletar métricas de memória, disco e logs dos containers Docker, complementando as métricas padrão disponibilizadas pela AWS.
+
+## Como executar localmente
+
+Com Docker:
+
+```bash
+docker build -t flask-sample-app .
+docker run -p 80:80 flask-sample-app
+```
+
+Ou com Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+A aplicação estará disponível em:
+
+```text
+http://localhost:80
+```
+
+## Tecnologias utilizadas
 
 * Python
 * Flask
